@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Concierge - AI Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563EB',
+                        secondary: '#F8FAFC',
+                        accent: '#10B981',
+                        neutral: '#64748B',
+                        error: '#EF4444',
+                        warning: '#F59E0B'
+                    },
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif']
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'wave': 'wave 1.5s ease-in-out infinite',
+                        'typing': 'typing 1.4s infinite ease-in-out',
+                        'fade-in': 'fadeIn 0.3s ease-in-out',
+                        'slide-up': 'slideUp 0.4s ease-out'
+                    },
+                    keyframes: {
+                        wave: {
+                            '0%, 40%, 100%': { transform: 'scaleY(0.4)' },
+                            '20%': { transform: 'scaleY(1.0)' }
+                        },
+                        typing: {
+                            '0%, 60%, 100%': { transform: 'translateY(0px)' },
+                            '30%': { transform: 'translateY(-10px)' }
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-secondary font-inter">
+    <!-- @COMPONENT: AppLayout [main container] -->
+    <div class="min-h-screen flex">
+        
+        <!-- @COMPONENT: Sidebar [asset management and search] -->
+        <div class="w-80 bg-white border-r border-gray-200 flex flex-col hidden lg:flex">
+            <!-- Sidebar Header -->
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                        <i class="fas fa-concierge-bell text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-semibold text-gray-900">Digital Concierge</h1>
+                        <p class="text-sm text-neutral">AI Assistant</p>
+                    </div>
+                </div>
+                
+                <!-- Asset Search -->
+                <div class="relative">
+                    <i class="fas fa-search absolute left-3 top-3 text-neutral text-sm"></i>
+                    <input type="text" placeholder="Search assets..." 
+                           class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                           data-bind="searchQuery">
+                </div>
+            </div>
+            
+            <!-- Asset Categories -->
+            <div class="flex-1 overflow-y-auto p-6">
+                <div class="space-y-6">
+                    <!-- @MAP: assetCategories.map(category => ( -->
+                    <div class="space-y-3">
+                        <h3 class="font-medium text-gray-900 flex items-center justify-between">
+                            <span data-bind="category.name">Documents</span>
+                            <span class="bg-gray-100 text-neutral text-xs px-2 py-1 rounded-full" data-bind="category.count">12</span>
+                        </h3>
+                        
+                        <!-- Asset Items -->
+                        <div class="space-y-2">
+                            <!-- @MAP: category.items.map(item => ( -->
+                            <div class="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors group" data-event="click:selectAsset">
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-8 h-8 bg-primary bg-opacity-10 rounded flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-file-text text-primary text-sm" data-bind="item.icon"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="font-medium text-sm text-gray-900 truncate" data-bind="item.title">Hotel Policies</p>
+                                        <p class="text-xs text-neutral truncate" data-bind="item.description">Guest guidelines and procedures</p>
+                                        <div class="flex flex-wrap gap-1 mt-2">
+                                            <!-- @MAP: item.tags.map(tag => ( -->
+                                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded" data-bind="tag">policy</span>
+                                            <span class="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded" data-bind="tag">guest</span>
+                                            <!-- @END_MAP )) -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- @END_MAP )) -->
+                        </div>
+                    </div>
+                    <!-- @END_MAP )) -->
+                    
+                    <!-- Additional Asset Categories (Mock Data) -->
+                    <div class="space-y-3">
+                        <h3 class="font-medium text-gray-900 flex items-center justify-between">
+                            <span>Images</span>
+                            <span class="bg-gray-100 text-neutral text-xs px-2 py-1 rounded-full">8</span>
+                        </h3>
+                        <div class="space-y-2">
+                            <div class="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors group">
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-8 h-8 bg-green-100 rounded flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-image text-accent text-sm"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="font-medium text-sm text-gray-900 truncate">Property Photos</p>
+                                        <p class="text-xs text-neutral truncate">Room and amenity images</p>
+                                        <div class="flex flex-wrap gap-1 mt-2">
+                                            <span class="bg-purple-100 text-purple-800 text-xs px-2 py-0.5 rounded">photos</span>
+                                            <span class="bg-orange-100 text-orange-800 text-xs px-2 py-0.5 rounded">rooms</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <h3 class="font-medium text-gray-900 flex items-center justify-between">
+                            <span>Templates</span>
+                            <span class="bg-gray-100 text-neutral text-xs px-2 py-1 rounded-full">5</span>
+                        </h3>
+                        <div class="space-y-2">
+                            <div class="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors group">
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-8 h-8 bg-yellow-100 rounded flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-clipboard-list text-warning text-sm"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="font-medium text-sm text-gray-900 truncate">Response Templates</p>
+                                        <p class="text-xs text-neutral truncate">Pre-written response patterns</p>
+                                        <div class="flex flex-wrap gap-1 mt-2">
+                                            <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-0.5 rounded">templates</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: Sidebar -->
+        
+        <!-- @COMPONENT: MainInterface [chat and conversation area] -->
+        <div class="flex-1 flex flex-col">
+            
+            <!-- Header -->
+            <div class="bg-white border-b border-gray-200 p-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <button class="lg:hidden p-2 text-neutral hover:text-gray-900" data-event="click:toggleSidebar">
+                            <i class="fas fa-bars text-lg"></i>
+                        </button>
+                        <div>
+                            <h2 class="font-semibold text-gray-900">Digital Concierge Chat</h2>
+                            <p class="text-sm text-neutral">How can I help you today?</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-3">
+                        <!-- Input Mode Toggle -->
+                        <div class="flex bg-gray-100 rounded-lg p-1" data-implementation="Toggle between text and voice input modes">
+                            <button class="px-3 py-1.5 text-sm font-medium bg-white text-gray-900 rounded-md shadow-sm" data-bind="inputMode === 'text'">
+                                <i class="fas fa-keyboard mr-1"></i> Text
+                            </button>
+                            <button class="px-3 py-1.5 text-sm font-medium text-neutral hover:text-gray-900" data-bind="inputMode === 'voice'">
+                                <i class="fas fa-microphone mr-1"></i> Voice
+                            </button>
+                        </div>
+                        
+                        <!-- Settings -->
+                        <button class="p-2 text-neutral hover:text-gray-900" data-event="click:openSettings">
+                            <i class="fas fa-cog text-lg"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chat Messages Area -->
+            <div class="flex-1 overflow-y-auto bg-secondary" data-implementation="Implement smooth scrolling and auto-scroll to bottom">
+                <div class="max-w-4xl mx-auto p-6 space-y-6">
+                    
+                    <!-- Welcome Message -->
+                    <div class="animate-fade-in">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-robot text-white"></i>
+                            </div>
+                            <div class="bg-white rounded-2xl rounded-tl-sm p-4 shadow-sm max-w-2xl">
+                                <p class="text-gray-900">Hello! I'm your Digital Concierge. I can help you with information about our services, answer questions, and provide assistance. How can I help you today?</p>
+                                <div class="mt-3 flex flex-wrap gap-2">
+                                    <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-full text-sm transition-colors" data-event="click:sendSuggestion">
+                                        Tell me about amenities
+                                    </button>
+                                    <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-full text-sm transition-colors" data-event="click:sendSuggestion">
+                                        Room service hours
+                                    </button>
+                                    <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-full text-sm transition-colors" data-event="click:sendSuggestion">
+                                        Local attractions
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-xs text-neutral ml-14 mt-1">Just now</p>
+                    </div>
+                    
+                    <!-- @MAP: messages.map(message => ( -->
+                    <!-- User Message Example -->
+                    <div class="animate-slide-up" data-mock="true">
+                        <div class="flex items-start space-x-4 justify-end">
+                            <div class="bg-primary rounded-2xl rounded-tr-sm p-4 shadow-sm max-w-2xl">
+                                <p class="text-white" data-bind="message.content">What are the hotel's amenities?</p>
+                            </div>
+                            <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-user text-gray-600"></i>
+                            </div>
+                        </div>
+                        <p class="text-xs text-neutral mr-14 mt-1 text-right" data-bind="message.timestamp">2:45 PM</p>
+                    </div>
+                    
+                    <!-- AI Response Example -->
+                    <div class="animate-slide-up" data-mock="true">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-robot text-white"></i>
+                            </div>
+                            <div class="bg-white rounded-2xl rounded-tl-sm p-4 shadow-sm max-w-2xl">
+                                <p class="text-gray-900 mb-3" data-bind="message.content">Our hotel offers a wide range of amenities for your comfort:</p>
+                                
+                                <!-- Dynamic Content Cards -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                        <div class="flex items-center space-x-2 mb-2">
+                                            <i class="fas fa-swimming-pool text-blue-600"></i>
+                                            <h4 class="font-medium text-blue-900">Pool & Spa</h4>
+                                        </div>
+                                        <p class="text-sm text-blue-800">Indoor pool, hot tub, and full-service spa</p>
+                                    </div>
+                                    
+                                    <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                                        <div class="flex items-center space-x-2 mb-2">
+                                            <i class="fas fa-dumbbell text-green-600"></i>
+                                            <h4 class="font-medium text-green-900">Fitness Center</h4>
+                                        </div>
+                                        <p class="text-sm text-green-800">24/7 access with modern equipment</p>
+                                    </div>
+                                    
+                                    <div class="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                                        <div class="flex items-center space-x-2 mb-2">
+                                            <i class="fas fa-utensils text-purple-600"></i>
+                                            <h4 class="font-medium text-purple-900">Dining</h4>
+                                        </div>
+                                        <p class="text-sm text-purple-800">3 restaurants and room service</p>
+                                    </div>
+                                    
+                                    <div class="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                                        <div class="flex items-center space-x-2 mb-2">
+                                            <i class="fas fa-wifi text-orange-600"></i>
+                                            <h4 class="font-medium text-orange-900">Connectivity</h4>
+                                        </div>
+                                        <p class="text-sm text-orange-800">Free high-speed WiFi throughout</p>
+                                    </div>
+                                </div>
+                                
+                                <p class="text-sm text-gray-600">Would you like more details about any specific amenity?</p>
+                            </div>
+                        </div>
+                        <p class="text-xs text-neutral ml-14 mt-1" data-bind="message.timestamp">2:46 PM</p>
+                    </div>
+                    
+                    <!-- Typing Indicator (when AI is responding) -->
+                    <div class="animate-fade-in" data-bind="isTyping" data-implementation="Show when AI is generating response">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-robot text-white"></i>
+                            </div>
+                            <div class="bg-white rounded-2xl rounded-tl-sm p-4 shadow-sm">
+                                <div class="flex space-x-1">
+                                    <div class="w-2 h-2 bg-neutral rounded-full animate-typing"></div>
+                                    <div class="w-2 h-2 bg-neutral rounded-full animate-typing" style="animation-delay: 0.2s"></div>
+                                    <div class="w-2 h-2 bg-neutral rounded-full animate-typing" style="animation-delay: 0.4s"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- @END_MAP )) -->
+                    
+                </div>
+            </div>
+            
+            <!-- Input Area -->
+            <div class="bg-white border-t border-gray-200 p-4">
+                <div class="max-w-4xl mx-auto">
+                    
+                    <!-- Voice Input Mode -->
+                    <div class="voice-input hidden" data-bind="inputMode === 'voice'" data-implementation="Show when voice mode is active">
+                        <div class="flex items-center justify-center space-x-4 py-8">
+                            <!-- Voice Button with Animation -->
+                            <div class="relative">
+                                <button class="w-20 h-20 bg-accent hover:bg-green-600 rounded-full flex items-center justify-center transition-all transform hover:scale-105 focus:ring-4 focus:ring-green-200" 
+                                        data-event="click:toggleVoiceRecording" 
+                                        data-implementation="Implement Web Speech API integration">
+                                    <i class="fas fa-microphone text-white text-2xl" data-bind="!isRecording"></i>
+                                    <i class="fas fa-stop text-white text-2xl hidden" data-bind="isRecording"></i>
+                                </button>
+                                
+                                <!-- Voice Wave Animation -->
+                                <div class="absolute inset-0 rounded-full border-4 border-accent animate-pulse-slow" data-bind="isRecording"></div>
+                                <div class="absolute -inset-2 rounded-full border-2 border-accent opacity-50 animate-pulse-slow" data-bind="isRecording" style="animation-delay: 0.5s"></div>
+                            </div>
+                            
+                            <!-- Voice Feedback -->
+                            <div class="text-center">
+                                <p class="font-medium text-gray-900" data-bind="!isRecording">Tap to speak</p>
+                                <p class="font-medium text-accent animate-pulse" data-bind="isRecording">Listening...</p>
+                                <p class="text-sm text-neutral mt-1" data-bind="voiceTranscript">Voice transcript will appear here</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Voice Visualizer -->
+                        <div class="flex items-center justify-center space-x-1 mb-4" data-bind="isRecording" data-implementation="Real-time audio level visualization">
+                            <div class="w-1 bg-accent rounded-full animate-wave" style="height: 20px; animation-delay: 0s"></div>
+                            <div class="w-1 bg-accent rounded-full animate-wave" style="height: 30px; animation-delay: 0.1s"></div>
+                            <div class="w-1 bg-accent rounded-full animate-wave" style="height: 25px; animation-delay: 0.2s"></div>
+                            <div class="w-1 bg-accent rounded-full animate-wave" style="height: 40px; animation-delay: 0.3s"></div>
+                            <div class="w-1 bg-accent rounded-full animate-wave" style="height: 35px; animation-delay: 0.4s"></div>
+                            <div class="w-1 bg-accent rounded-full animate-wave" style="height: 30px; animation-delay: 0.5s"></div>
+                            <div class="w-1 bg-accent rounded-full animate-wave" style="height: 45px; animation-delay: 0.6s"></div>
+                            <div class="w-1 bg-accent rounded-full animate-wave" style="height: 25px; animation-delay: 0.7s"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Text Input Mode -->
+                    <div class="text-input" data-bind="inputMode === 'text'">
+                        <div class="flex items-end space-x-4">
+                            <div class="flex-1">
+                                <div class="relative">
+                                    <textarea 
+                                        placeholder="Type your message here..." 
+                                        class="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent resize-none" 
+                                        rows="1"
+                                        data-bind="textInput"
+                                        data-implementation="Auto-resize textarea based on content"
+                                        data-event="keydown:handleKeyDown"></textarea>
+                                    
+                                    <!-- Quick Actions -->
+                                    <div class="absolute right-3 bottom-3 flex items-center space-x-2">
+                                        <button class="p-1.5 text-neutral hover:text-gray-900 transition-colors" data-event="click:attachFile" data-implementation="File attachment functionality">
+                                            <i class="fas fa-paperclip"></i>
+                                        </button>
+                                        <button class="p-1.5 text-neutral hover:text-gray-900 transition-colors" data-event="click:insertEmoji" data-implementation="Emoji picker">
+                                            <i class="fas fa-smile"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Character Count -->
+                                <p class="text-xs text-neutral mt-2 text-right" data-bind="textInput.length + '/2000'">0/2000</p>
+                            </div>
+                            
+                            <!-- Send Button -->
+                            <button class="bg-primary hover:bg-blue-700 text-white p-4 rounded-xl transition-all transform hover:scale-105 focus:ring-4 focus:ring-blue-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    data-event="click:sendMessage" 
+                                    data-implementation="Send message and clear input"
+                                    data-bind="disabled:!textInput.trim()">
+                                <i class="fas fa-paper-plane text-lg"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Suggested Responses -->
+                        <div class="flex flex-wrap gap-2 mt-4" data-implementation="Dynamic suggestions based on conversation context">
+                            <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-full text-sm transition-colors" data-event="click:sendSuggestion">
+                                Check-in time?
+                            </button>
+                            <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-full text-sm transition-colors" data-event="click:sendSuggestion">
+                                WiFi password
+                            </button>
+                            <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-full text-sm transition-colors" data-event="click:sendSuggestion">
+                                Restaurant reservations
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: MainInterface -->
+    </div>
+    <!-- @END_COMPONENT: AppLayout -->
+    
+    <!-- Loading Overlay (for page transitions) -->
+    <div class="fixed inset-0 bg-white bg-opacity-90 flex items-center justify-center z-50 hidden" data-bind="isLoading">
+        <div class="text-center">
+            <div class="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p class="text-gray-900 font-medium">Processing your request...</p>
+        </div>
+    </div>
+    
+    <script>
+        (function() {
+            // TODO: Implement Web Speech API for voice input
+            // TODO: Implement conversational state management
+            // TODO: Implement asset search and retrieval
+            // TODO: Implement real-time message updates
+            // TODO: Implement file upload functionality
+            // TODO: Implement notification system
+            
+            // Mock interaction handlers for demonstration
+            let isRecording = false;
+            let currentInputMode = 'text';
+            
+            // Voice recording toggle
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('[data-event*="toggleVoiceRecording"]')) {
+                    isRecording = !isRecording;
+                    console.log('Voice recording:', isRecording ? 'started' : 'stopped');
+                    // TODO: Implement actual speech recognition
+                }
+                
+                if (e.target.closest('[data-event*="sendMessage"]')) {
+                    const textarea = document.querySelector('textarea');
+                    if (textarea && textarea.value.trim()) {
+                        console.log('Sending message:', textarea.value);
+                        // TODO: Implement message sending logic
+                        textarea.value = '';
+                    }
+                }
+                
+                if (e.target.closest('[data-event*="sendSuggestion"]')) {
+                    const suggestion = e.target.textContent;
+                    console.log('Sending suggestion:', suggestion);
+                    // TODO: Implement suggestion handling
+                }
+            });
+            
+            // Auto-resize textarea
+            document.addEventListener('input', function(e) {
+                if (e.target.tagName === 'TEXTAREA') {
+                    e.target.style.height = 'auto';
+                    e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+                }
+            });
+            
+            // Enter key handling
+            document.addEventListener('keydown', function(e) {
+                if (e.target.tagName === 'TEXTAREA' && e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    const sendButton = document.querySelector('[data-event*="sendMessage"]');
+                    if (sendButton) sendButton.click();
+                }
+            });
+            
+            // Smooth scroll to bottom function
+            function scrollToBottom() {
+                const chatArea = document.querySelector('.overflow-y-auto');
+                if (chatArea) {
+                    chatArea.scrollTo({
+                        top: chatArea.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                }
+            }
+            
+            // Initialize smooth scrolling
+            scrollToBottom();
+        })();
+    </script>
+</body>
+</html>

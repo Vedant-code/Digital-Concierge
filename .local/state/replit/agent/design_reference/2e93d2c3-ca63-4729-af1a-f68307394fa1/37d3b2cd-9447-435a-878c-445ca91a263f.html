@@ -1,0 +1,486 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Concierge - AI-Powered Assistance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#1e293b',
+                        accent: '#8b5cf6',
+                        success: '#10b981',
+                    },
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                        'typing': 'typing 1.5s infinite',
+                        'pulse-soft': 'pulseSoft 2s infinite',
+                    }
+                }
+            }
+        };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes typing {
+            0%, 60% { opacity: 1; }
+            30% { opacity: 0.5; }
+        }
+        @keyframes pulseSoft {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .message-enter {
+            animation: slideUp 0.3s ease-out;
+        }
+        .typing-indicator {
+            display: inline-block;
+            animation: typing 1.5s infinite;
+        }
+        .glass-effect {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.9);
+        }
+    </style>
+</head>
+<body class="font-inter bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+    <!-- @COMPONENT: DigitalConciergeApp [main application container] -->
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- @COMPONENT: ServiceSidebar [service categories and navigation] -->
+        <div class="hidden lg:block w-80 bg-white border-r border-slate-200 shadow-sm">
+            <div class="p-6 border-b border-slate-100">
+                <h1 class="text-2xl font-bold text-secondary flex items-center">
+                    <i class="fas fa-concierge-bell text-primary mr-3"></i>
+                    Digital Concierge
+                </h1>
+                <p class="text-slate-600 mt-1">AI-powered assistance at your service</p>
+            </div>
+            
+            <div class="p-4 space-y-3">
+                <h3 class="text-sm font-semibold text-slate-700 uppercase tracking-wide mb-4">Services</h3>
+                
+                <!-- Service Categories -->
+                <div class="space-y-2">
+                    <button class="w-full text-left p-3 rounded-lg bg-primary text-white shadow-sm transition-all duration-200 hover:shadow-md">
+                        <i class="fas fa-comments mr-3"></i>
+                        <span>General Assistance</span>
+                    </button>
+                    
+                    <button class="w-full text-left p-3 rounded-lg bg-slate-50 text-slate-700 transition-all duration-200 hover:bg-slate-100 hover:shadow-sm">
+                        <i class="fas fa-map-marker-alt mr-3"></i>
+                        <span>Local Recommendations</span>
+                    </button>
+                    
+                    <button class="w-full text-left p-3 rounded-lg bg-slate-50 text-slate-700 transition-all duration-200 hover:bg-slate-100 hover:shadow-sm">
+                        <i class="fas fa-calendar-alt mr-3"></i>
+                        <span>Bookings & Reservations</span>
+                    </button>
+                    
+                    <button class="w-full text-left p-3 rounded-lg bg-slate-50 text-slate-700 transition-all duration-200 hover:bg-slate-100 hover:shadow-sm">
+                        <i class="fas fa-utensils mr-3"></i>
+                        <span>Dining</span>
+                    </button>
+                    
+                    <button class="w-full text-left p-3 rounded-lg bg-slate-50 text-slate-700 transition-all duration-200 hover:bg-slate-100 hover:shadow-sm">
+                        <i class="fas fa-plane mr-3"></i>
+                        <span>Travel & Transportation</span>
+                    </button>
+                    
+                    <button class="w-full text-left p-3 rounded-lg bg-slate-50 text-slate-700 transition-all duration-200 hover:bg-slate-100 hover:shadow-sm">
+                        <i class="fas fa-shopping-bag mr-3"></i>
+                        <span>Shopping</span>
+                    </button>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="mt-8">
+                    <h3 class="text-sm font-semibold text-slate-700 uppercase tracking-wide mb-4">Quick Actions</h3>
+                    <div class="space-y-2">
+                        <button class="w-full text-left p-2 text-sm text-slate-600 hover:text-slate-800 transition-colors duration-200">
+                            <i class="fas fa-history mr-2"></i>
+                            Conversation History
+                        </button>
+                        <button class="w-full text-left p-2 text-sm text-slate-600 hover:text-slate-800 transition-colors duration-200">
+                            <i class="fas fa-user-cog mr-2"></i>
+                            Preferences
+                        </button>
+                        <button class="w-full text-left p-2 text-sm text-slate-600 hover:text-slate-800 transition-colors duration-200">
+                            <i class="fas fa-question-circle mr-2"></i>
+                            Help & Support
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: ServiceSidebar -->
+        
+        <!-- @COMPONENT: ChatInterface [main chat area] -->
+        <div class="flex-1 flex flex-col">
+            
+            <!-- @COMPONENT: ChatHeader [chat header with status] -->
+            <div class="bg-white border-b border-slate-200 px-6 py-4 shadow-sm">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <button class="lg:hidden mr-4 p-2 rounded-lg hover:bg-slate-100 transition-colors duration-200">
+                            <i class="fas fa-bars text-slate-600"></i>
+                        </button>
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-gradient-to-r from-accent to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+                                <i class="fas fa-robot text-white"></i>
+                            </div>
+                            <div class="ml-3">
+                                <h2 class="font-semibold text-secondary">AI Concierge</h2>
+                                <div class="flex items-center text-sm text-slate-600">
+                                    <div class="w-2 h-2 bg-success rounded-full mr-2 animate-pulse-soft"></div>
+                                    <span data-bind="aiStatus">Online & Ready to Assist</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-2">
+                        <button class="p-2 rounded-lg hover:bg-slate-100 transition-colors duration-200" title="Voice Chat">
+                            <i class="fas fa-microphone text-slate-600"></i>
+                        </button>
+                        <button class="p-2 rounded-lg hover:bg-slate-100 transition-colors duration-200" title="Video Call">
+                            <i class="fas fa-video text-slate-600"></i>
+                        </button>
+                        <button class="p-2 rounded-lg hover:bg-slate-100 transition-colors duration-200" title="Settings">
+                            <i class="fas fa-cog text-slate-600"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- @END_COMPONENT: ChatHeader -->
+            
+            <!-- @COMPONENT: ChatMessages [scrollable message area] -->
+            <div class="flex-1 overflow-y-auto p-6 space-y-4" id="chatMessages">
+                
+                <!-- Welcome Message -->
+                <div class="flex items-start animate-fade-in">
+                    <div class="w-8 h-8 bg-gradient-to-r from-accent to-purple-600 rounded-full flex items-center justify-center shadow-md flex-shrink-0">
+                        <i class="fas fa-robot text-white text-sm"></i>
+                    </div>
+                    <div class="ml-3 bg-white rounded-2xl rounded-tl-md p-4 shadow-sm border border-slate-100 max-w-md">
+                        <p class="text-slate-800" data-mock="true">Welcome! I'm your AI-powered digital concierge. How may I assist you today? I can help with recommendations, bookings, local information, and much more.</p>
+                        <div class="text-xs text-slate-500 mt-2">
+                            <span data-bind="message.timestamp">2:34 PM</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- User Message -->
+                <div class="flex items-start justify-end animate-fade-in">
+                    <div class="mr-3 bg-primary rounded-2xl rounded-tr-md p-4 shadow-sm max-w-md">
+                        <p class="text-white" data-mock="true">Hi! I'm looking for a good Italian restaurant nearby for dinner tonight. Something romantic would be perfect.</p>
+                        <div class="text-xs text-blue-100 mt-2 text-right">
+                            <span data-bind="message.timestamp">2:35 PM</span>
+                        </div>
+                    </div>
+                    <div class="w-8 h-8 bg-slate-300 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-user text-slate-600 text-sm"></i>
+                    </div>
+                </div>
+                
+                <!-- AI Response with typing indicator -->
+                <div class="flex items-start animate-fade-in">
+                    <div class="w-8 h-8 bg-gradient-to-r from-accent to-purple-600 rounded-full flex items-center justify-center shadow-md flex-shrink-0">
+                        <i class="fas fa-robot text-white text-sm"></i>
+                    </div>
+                    <div class="ml-3 bg-white rounded-2xl rounded-tl-md p-4 shadow-sm border border-slate-100 max-w-lg">
+                        <p class="text-slate-800" data-mock="true">Perfect! I found some excellent romantic Italian restaurants near you. Here are my top recommendations:</p>
+                        
+                        <!-- Restaurant Cards -->
+                        <div class="mt-3 space-y-3">
+                            <!-- Restaurant 1 -->
+                            <div class="border border-slate-100 rounded-lg p-3 hover:shadow-md transition-shadow duration-200">
+                                <div class="flex items-start">
+                                    <!-- Restaurant image: Elegant Italian restaurant interior with warm lighting and wine bottles -->
+                                    <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=80&h=60" alt="Elegant Italian restaurant" class="w-16 h-12 rounded object-cover flex-shrink-0" data-mock-image="true">
+                                    <div class="ml-3 flex-1">
+                                        <h4 class="font-semibold text-slate-800" data-mock="true">Villa Italiana</h4>
+                                        <div class="flex items-center text-sm text-slate-600 mt-1">
+                                            <div class="flex text-yellow-400">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                            </div>
+                                            <span class="ml-2" data-mock="true">4.8 (142 reviews)</span>
+                                        </div>
+                                        <p class="text-sm text-slate-600 mt-1" data-mock="true">Intimate atmosphere, authentic pasta, excellent wine selection</p>
+                                        <div class="flex items-center justify-between mt-2">
+                                            <span class="text-sm text-slate-500" data-mock="true">0.3 miles away</span>
+                                            <button class="text-xs bg-primary text-white px-3 py-1 rounded-full hover:bg-blue-700 transition-colors duration-200" data-event="click:makeReservation">
+                                                Reserve
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Restaurant 2 -->
+                            <div class="border border-slate-100 rounded-lg p-3 hover:shadow-md transition-shadow duration-200">
+                                <div class="flex items-start">
+                                    <!-- Restaurant image: Cozy Italian bistro with candlelit tables -->
+                                    <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=80&h=60" alt="Cozy Italian bistro" class="w-16 h-12 rounded object-cover flex-shrink-0" data-mock-image="true">
+                                    <div class="ml-3 flex-1">
+                                        <h4 class="font-semibold text-slate-800" data-mock="true">Amore Bistro</h4>
+                                        <div class="flex items-center text-sm text-slate-600 mt-1">
+                                            <div class="flex text-yellow-400">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star-half-alt"></i>
+                                            </div>
+                                            <span class="ml-2" data-mock="true">4.6 (89 reviews)</span>
+                                        </div>
+                                        <p class="text-sm text-slate-600 mt-1" data-mock="true">Candlelit dining, homemade tiramisu, live piano</p>
+                                        <div class="flex items-center justify-between mt-2">
+                                            <span class="text-sm text-slate-500" data-mock="true">0.7 miles away</span>
+                                            <button class="text-xs bg-primary text-white px-3 py-1 rounded-full hover:bg-blue-700 transition-colors duration-200" data-event="click:makeReservation">
+                                                Reserve
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <p class="text-slate-800 mt-3" data-mock="true">Would you like me to check availability and make a reservation at any of these restaurants?</p>
+                        
+                        <div class="text-xs text-slate-500 mt-2">
+                            <span data-bind="message.timestamp">2:36 PM</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Typing Indicator -->
+                <div class="flex items-start animate-fade-in" id="typingIndicator" style="display: none;">
+                    <div class="w-8 h-8 bg-gradient-to-r from-accent to-purple-600 rounded-full flex items-center justify-center shadow-md flex-shrink-0">
+                        <i class="fas fa-robot text-white text-sm"></i>
+                    </div>
+                    <div class="ml-3 bg-white rounded-2xl rounded-tl-md p-4 shadow-sm border border-slate-100">
+                        <div class="flex space-x-1">
+                            <div class="w-2 h-2 bg-slate-400 rounded-full typing-indicator"></div>
+                            <div class="w-2 h-2 bg-slate-400 rounded-full typing-indicator" style="animation-delay: 0.2s;"></div>
+                            <div class="w-2 h-2 bg-slate-400 rounded-full typing-indicator" style="animation-delay: 0.4s;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            <!-- @END_COMPONENT: ChatMessages -->
+            
+            <!-- @COMPONENT: MessageInput [message composition area] -->
+            <div class="bg-white border-t border-slate-200 p-4">
+                <div class="flex items-end space-x-3">
+                    <button class="p-3 rounded-full hover:bg-slate-100 transition-colors duration-200 flex-shrink-0" title="Attach file">
+                        <i class="fas fa-paperclip text-slate-600"></i>
+                    </button>
+                    
+                    <div class="flex-1 relative">
+                        <textarea 
+                            class="w-full resize-none border border-slate-200 rounded-2xl px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 max-h-32"
+                            rows="1"
+                            placeholder="Type your message..."
+                            id="messageInput"
+                            data-bind="messageText"
+                            data-implementation="Auto-resize textarea and handle enter key for sending"
+                        ></textarea>
+                        
+                        <!-- Quick Suggestions -->
+                        <div class="absolute -top-12 left-0 right-0 flex space-x-2 opacity-0 transition-opacity duration-200" id="quickSuggestions">
+                            <button class="px-3 py-1 bg-slate-100 text-slate-700 text-sm rounded-full hover:bg-slate-200 transition-colors duration-200">
+                                Find restaurants
+                            </button>
+                            <button class="px-3 py-1 bg-slate-100 text-slate-700 text-sm rounded-full hover:bg-slate-200 transition-colors duration-200">
+                                Book hotel
+                            </button>
+                            <button class="px-3 py-1 bg-slate-100 text-slate-700 text-sm rounded-full hover:bg-slate-200 transition-colors duration-200">
+                                Local events
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button class="p-3 rounded-full bg-primary hover:bg-blue-700 transition-all duration-200 flex-shrink-0 shadow-lg hover:shadow-xl transform hover:scale-105" 
+                            id="sendButton" 
+                            data-event="click:sendMessage"
+                            data-implementation="Should validate input and send message to OpenAI API">
+                        <i class="fas fa-paper-plane text-white"></i>
+                    </button>
+                    
+                    <button class="p-3 rounded-full hover:bg-slate-100 transition-colors duration-200 flex-shrink-0" title="Voice message">
+                        <i class="fas fa-microphone text-slate-600"></i>
+                    </button>
+                </div>
+                
+                <!-- AI Status Bar -->
+                <div class="flex items-center justify-between mt-3 text-xs text-slate-500">
+                    <div class="flex items-center">
+                        <div class="w-2 h-2 bg-success rounded-full mr-2"></div>
+                        <span data-bind="aiStatus">AI is ready to respond</span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span data-bind="responseTime">Avg response: 2.3s</span>
+                        <span data-bind="messageCount">15 messages today</span>
+                    </div>
+                </div>
+            </div>
+            <!-- @END_COMPONENT: MessageInput -->
+            
+        </div>
+        <!-- @END_COMPONENT: ChatInterface -->
+        
+    </div>
+    <!-- @END_COMPONENT: DigitalConciergeApp -->
+    
+    <!-- @COMPONENT: FloatingActions [floating action buttons] -->
+    <div class="fixed bottom-6 right-6 flex flex-col space-y-3 z-50">
+        <button class="w-12 h-12 bg-white shadow-lg rounded-full hover:shadow-xl transition-all duration-200 transform hover:scale-110 flex items-center justify-center border border-slate-200" title="Emergency Contact">
+            <i class="fas fa-phone text-slate-600"></i>
+        </button>
+        <button class="w-12 h-12 bg-accent shadow-lg rounded-full hover:shadow-xl transition-all duration-200 transform hover:scale-110 flex items-center justify-center" title="Quick Help">
+            <i class="fas fa-question text-white"></i>
+        </button>
+    </div>
+    <!-- @END_COMPONENT: FloatingActions -->
+    
+    <!-- @FUNCTIONALITY: This chat interface should integrate with OpenAI API for intelligent responses -->
+    <!-- @STATE: messages:array = [], isTyping:boolean = false, currentService:string = 'general' -->
+    
+    <script>
+        (function() {
+            // UI Enhancement JavaScript - No business logic implementation
+            
+            const messageInput = document.getElementById('messageInput');
+            const sendButton = document.getElementById('sendButton');
+            const quickSuggestions = document.getElementById('quickSuggestions');
+            const typingIndicator = document.getElementById('typingIndicator');
+            
+            // Auto-resize textarea
+            if (messageInput) {
+                messageInput.addEventListener('input', function() {
+                    this.style.height = 'auto';
+                    this.style.height = Math.min(this.scrollHeight, 128) + 'px';
+                    
+                    // Show quick suggestions when empty
+                    if (this.value.trim() === '') {
+                        quickSuggestions.style.opacity = '1';
+                    } else {
+                        quickSuggestions.style.opacity = '0';
+                    }
+                });
+                
+                // Handle Enter key
+                messageInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        // TODO: Implement message sending logic
+                        simulateMessageSend();
+                    }
+                });
+            }
+            
+            // Send button click handler
+            if (sendButton) {
+                sendButton.addEventListener('click', function() {
+                    // TODO: Implement message sending logic with OpenAI API integration
+                    simulateMessageSend();
+                });
+            }
+            
+            // Quick suggestion clicks
+            const suggestionButtons = document.querySelectorAll('#quickSuggestions button');
+            suggestionButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    messageInput.value = this.textContent;
+                    messageInput.focus();
+                    quickSuggestions.style.opacity = '0';
+                });
+            });
+            
+            // Service category switching
+            const serviceButtons = document.querySelectorAll('[data-service]');
+            serviceButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active state from all buttons
+                    serviceButtons.forEach(btn => {
+                        btn.classList.remove('bg-primary', 'text-white');
+                        btn.classList.add('bg-slate-50', 'text-slate-700');
+                    });
+                    
+                    // Add active state to clicked button
+                    this.classList.remove('bg-slate-50', 'text-slate-700');
+                    this.classList.add('bg-primary', 'text-white');
+                    
+                    // TODO: Switch conversation context based on service category
+                });
+            });
+            
+            // Simulate message sending and AI response (for demo purposes)
+            function simulateMessageSend() {
+                const messageText = messageInput.value.trim();
+                if (!messageText) return;
+                
+                // Clear input
+                messageInput.value = '';
+                messageInput.style.height = 'auto';
+                quickSuggestions.style.opacity = '1';
+                
+                // Show typing indicator
+                showTypingIndicator();
+                
+                // TODO: Replace with actual OpenAI API call
+                setTimeout(() => {
+                    hideTypingIndicator();
+                    // Add AI response to chat
+                }, 2000);
+            }
+            
+            function showTypingIndicator() {
+                typingIndicator.style.display = 'flex';
+                // Scroll to bottom
+                const chatMessages = document.getElementById('chatMessages');
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            function hideTypingIndicator() {
+                typingIndicator.style.display = 'none';
+            }
+            
+            // Smooth scrolling for new messages
+            function scrollToBottom() {
+                const chatMessages = document.getElementById('chatMessages');
+                chatMessages.scrollTo({
+                    top: chatMessages.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }
+            
+            // Initialize smooth scrolling
+            scrollToBottom();
+            
+        })();
+    </script>
+</body>
+</html>
