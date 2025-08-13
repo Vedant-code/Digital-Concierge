@@ -2,7 +2,14 @@
 
 This is a full-stack digital concierge application built for luxury hotel guest services. The application features an AI-powered chat interface that helps guests with information about amenities, services, policies, and local attractions. It includes both text and voice input capabilities, with a knowledge base system for managing hotel assets and information.
 
-The system is designed as a modern web application with a React frontend and Express backend, using TypeScript throughout for type safety and better development experience.
+The system is designed as a modern web application with a React frontend and Express backend, using TypeScript throughout for type safety and better development experience. The project has been configured for deployment on both Replit and Vercel platforms.
+
+## Recent Changes (Aug 13, 2025)
+- ✅ Fixed voice input functionality - speech recognition now properly sends transcribed messages
+- ✅ Resolved conversation display distortion with proper message alignment and avatars
+- ✅ Connected suggestion buttons to chat functionality for seamless user experience
+- ✅ Prepared Vercel deployment with serverless API routes in `/api/` directory
+- ✅ Created comprehensive deployment documentation for Vercel platform
 
 # User Preferences
 

@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { MemStorage } from '../server/storage';
+import { MemStorage } from '../../server/storage';
 
 const memStorage = new MemStorage();
 
@@ -23,10 +23,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const assets = await memStorage.getAssets();
-    res.json(assets);
+    const { q: query } = req.query;
+    
+    if (!query || typeof query !== 'string') {
+      return res.status(400).json({ error: 'Query parameter "q" is required' });
+    }
+
+    const results = await memStorage.searchAssets(query);
+    res.json(results);
   } catch (error) {
-    console.error('Assets API error:', error);
+    console.error('Asset search API error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 }
