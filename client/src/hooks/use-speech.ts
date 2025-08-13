@@ -11,21 +11,29 @@ export function useSpeech() {
   const { isSupported, startListening, stopListening } = useSpeechRecognition({
     onResult: (result) => {
       console.log('Speech result:', result);
-      setTranscript(result.text);
-      // If we get a final result, prepare to send it
-      if (result.isFinal && result.text.trim()) {
+      const text = result.text.trim();
+      setTranscript(text);
+      // If we get any result with text, prepare to send it
+      if (text) {
         setShouldSendOnEnd(true);
+        console.log('Setting shouldSend to true for text:', text);
       }
     },
     onEnd: () => {
       console.log('Speech recognition ended, shouldSend:', shouldSendOnEnd, 'transcript:', transcript);
       setIsRecording(false);
       // Auto-send if we have a transcript and should send
-      if (shouldSendOnEnd && transcript.trim() && onTranscriptRef.current) {
-        console.log('Auto-sending transcript on end:', transcript.trim());
-        onTranscriptRef.current(transcript.trim());
-        setShouldSendOnEnd(false);
-      }
+      setTimeout(() => {
+        if ((shouldSendOnEnd || transcript.trim()) && onTranscriptRef.current) {
+          const finalTranscript = transcript.trim();
+          if (finalTranscript) {
+            console.log('Auto-sending transcript on end:', finalTranscript);
+            onTranscriptRef.current(finalTranscript);
+            setTranscript("");
+            setShouldSendOnEnd(false);
+          }
+        }
+      }, 50);
     },
     onError: (error) => {
       console.error('Speech recognition error:', error);
