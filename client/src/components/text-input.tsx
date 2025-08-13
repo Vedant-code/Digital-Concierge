@@ -30,6 +30,7 @@ export function TextInput({ onSend, disabled }: TextInputProps) {
   const handleSuggestion = (suggestion: string) => {
     if (!disabled) {
       onSend(suggestion);
+      setMessage(""); // Clear any existing input
     }
   };
 

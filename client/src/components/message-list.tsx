@@ -29,7 +29,8 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
   }, [messages]);
 
   const handleSuggestion = (suggestion: string) => {
-    // TODO: Implement suggestion handling
+    // This would be passed as a prop in a real implementation
+    // For now, we'll just log it
     console.log("Suggestion clicked:", suggestion);
   };
 
@@ -86,60 +87,75 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
         {messages.map((message) => (
           <div
             key={message.id}
-            className={`animate-slide-up ${
-              message.role === "user" ? "justify-end" : ""
-            } flex items-start space-x-4`}
+            className={`animate-slide-up w-full ${
+              message.role === "user" ? "flex justify-end" : "flex justify-start"
+            }`}
             data-testid={`message-${message.id}`}
           >
-            {message.role === "assistant" && (
-              <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
-                <i className="fas fa-robot text-white"></i>
+            <div className={`flex items-start space-x-4 max-w-4xl ${
+              message.role === "user" ? "flex-row-reverse space-x-reverse" : ""
+            }`}>
+              {/* Avatar */}
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                message.role === "user" 
+                  ? "bg-gray-300" 
+                  : "bg-primary"
+              }`}>
+                <i className={`${
+                  message.role === "user" 
+                    ? "fas fa-user text-gray-600" 
+                    : "fas fa-robot text-white"
+                }`}></i>
               </div>
-            )}
-            
-            <div
-              className={`rounded-2xl p-4 shadow-sm max-w-2xl ${
-                message.role === "user"
-                  ? "bg-primary text-white rounded-tr-sm"
-                  : "bg-white text-gray-900 rounded-tl-sm"
-              }`}
-            >
-              <p className="mb-3" data-testid={`message-content-${message.id}`}>
-                {message.content}
-              </p>
               
-              {/* Content Cards */}
-              {message.cards && message.cards.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-                  {message.cards.map((card) => {
-                    const colorClass = cardColorClasses[card.color as keyof typeof cardColorClasses] || cardColorClasses.blue;
-                    return (
-                      <div
-                        key={card.id}
-                        className={`border rounded-lg p-3 ${colorClass}`}
-                        data-testid={`card-${card.id}`}
-                      >
-                        <div className="flex items-center space-x-2 mb-2">
-                          <i className={`${card.icon} text-current`}></i>
-                          <h4 className="font-medium" data-testid={`card-title-${card.id}`}>
-                            {card.title}
-                          </h4>
+              {/* Message Content */}
+              <div
+                className={`rounded-2xl p-4 shadow-sm max-w-2xl ${
+                  message.role === "user"
+                    ? "bg-primary text-white rounded-tr-sm"
+                    : "bg-white text-gray-900 rounded-tl-sm"
+                }`}
+              >
+                <p className="mb-3" data-testid={`message-content-${message.id}`}>
+                  {message.content}
+                </p>
+                
+                {/* Content Cards */}
+                {message.cards && message.cards.length > 0 && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                    {message.cards.map((card) => {
+                      const colorClass = cardColorClasses[card.color as keyof typeof cardColorClasses] || cardColorClasses.blue;
+                      return (
+                        <div
+                          key={card.id}
+                          className={`border rounded-lg p-3 ${colorClass}`}
+                          data-testid={`card-${card.id}`}
+                        >
+                          <div className="flex items-center space-x-2 mb-2">
+                            <i className={`${card.icon} text-current`}></i>
+                            <h4 className="font-medium" data-testid={`card-title-${card.id}`}>
+                              {card.title}
+                            </h4>
+                          </div>
+                          <p className="text-sm" data-testid={`card-description-${card.id}`}>
+                            {card.description}
+                          </p>
                         </div>
-                        <p className="text-sm" data-testid={`card-description-${card.id}`}>
-                          {card.description}
-                        </p>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
-            {message.role === "user" && (
-              <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
-                <i className="fas fa-user text-gray-600"></i>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
-            )}
+            </div>
+            
+            {/* Timestamp */}
+            <div className={`w-full mt-1 ${
+              message.role === "user" ? "text-right pr-14" : "text-left pl-14"
+            }`}>
+              <p className="text-xs text-neutral">
+                {formatDistanceToNow(new Date(message.timestamp), { addSuffix: true })}
+              </p>
+            </div>
           </div>
         ))}
 

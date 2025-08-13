@@ -35,17 +35,8 @@ export function useConversation() {
         setConversationId(data.conversationId);
       }
       
-      // Add user message
-      const userMessage: Message = {
-        id: generateUUID(),
-        role: "user",
-        content: messages.length > 0 ? messages[messages.length - 2]?.content || "" : "",
-        timestamp: new Date().toISOString(),
-        type: "text"
-      };
-
-      // Update messages with both user and assistant messages
-      setMessages(prev => [...prev, userMessage, data.message]);
+      // Update messages with assistant message only (user message was already added)
+      setMessages(prev => [...prev, data.message]);
     },
     onError: (error) => {
       console.error("Chat error:", error);
