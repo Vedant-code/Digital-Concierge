@@ -87,6 +87,7 @@ export function ChatInterface({ onToggleSidebar }: ChatInterfaceProps) {
       <MessageList 
         messages={messages} 
         isLoading={isLoading}
+        onSendMessage={sendMessage}
         data-testid="message-list"
       />
       

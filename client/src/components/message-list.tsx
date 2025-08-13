@@ -7,6 +7,7 @@ import { formatDistanceToNow } from "date-fns";
 interface MessageListProps {
   messages: Message[];
   isLoading: boolean;
+  onSendMessage?: (message: string) => void;
 }
 
 const cardColorClasses = {
@@ -19,7 +20,7 @@ const cardColorClasses = {
   indigo: "bg-indigo-50 border-indigo-200 text-indigo-900",
 };
 
-export function MessageList({ messages, isLoading }: MessageListProps) {
+export function MessageList({ messages, isLoading, onSendMessage }: MessageListProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -29,9 +30,9 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
   }, [messages]);
 
   const handleSuggestion = (suggestion: string) => {
-    // This would be passed as a prop in a real implementation
-    // For now, we'll just log it
-    console.log("Suggestion clicked:", suggestion);
+    if (onSendMessage) {
+      onSendMessage(suggestion);
+    }
   };
 
   return (
