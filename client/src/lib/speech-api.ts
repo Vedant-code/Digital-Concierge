@@ -46,13 +46,16 @@ export function useSpeechRecognition({
         } else {
           interimTranscript += transcript;
         }
-
-        onResult({
-          text: finalTranscript || interimTranscript,
-          confidence: confidence || 0,
-          isFinal: event.results[i].isFinal
-        });
       }
+
+      const currentTranscript = finalTranscript || interimTranscript;
+      console.log('Speech recognition result:', currentTranscript);
+      
+      onResult({
+        text: currentTranscript,
+        confidence: event.results[0][0].confidence || 0,
+        isFinal: event.results[event.results.length - 1].isFinal
+      });
     };
 
     recognition.onend = onEnd;

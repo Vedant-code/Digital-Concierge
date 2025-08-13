@@ -18,11 +18,19 @@ export function VoiceInput({ onTranscript, disabled }: VoiceInputProps) {
 
   const handleToggleRecording = () => {
     if (isRecording) {
+      console.log('Stopping recording, transcript:', transcript);
       stopRecording();
-      if (transcript.trim()) {
-        onTranscript(transcript.trim());
-      }
+      // Small delay to ensure speech recognition has processed
+      setTimeout(() => {
+        if (transcript && transcript.trim()) {
+          console.log('Sending transcript:', transcript.trim());
+          onTranscript(transcript.trim());
+        } else {
+          console.log('No transcript available');
+        }
+      }, 100);
     } else {
+      console.log('Starting recording');
       startRecording();
     }
   };

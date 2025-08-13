@@ -8,14 +8,17 @@ export function useSpeech() {
 
   const { isSupported, startListening, stopListening } = useSpeechRecognition({
     onResult: (result) => {
+      console.log('Speech result:', result);
       setTranscript(result.text);
     },
     onEnd: () => {
+      console.log('Speech recognition ended');
       setIsRecording(false);
     },
     onError: (error) => {
       console.error('Speech recognition error:', error);
       setIsRecording(false);
+      setTranscript("");
     }
   });
 
